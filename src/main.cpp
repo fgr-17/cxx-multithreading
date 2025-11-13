@@ -6,6 +6,12 @@
 
 #include <common.h>
 #include <iostream>
+#include <thread>
+
+void printMessage() {
+  std::cout << "Hello from thread" << std::endl;
+}
+
 
 /**
  *   @fn main
@@ -15,9 +21,11 @@
 int main() {
   Common c;
 
-  std::cout << "Hello C++ Template!" << std::endl;
+  std::thread t(printMessage);
+  t.join();
 
-  c.talk();
+  std::cout << "Hello from main" << std::endl;
+
 
   return 0;
 }
