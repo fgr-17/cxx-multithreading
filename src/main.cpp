@@ -4,17 +4,19 @@
  *    @author rouxfederico@gmail.com
  */
 
-#include <common.h>
 #include <iostream>
 #include <thread>
 #include <string>
+#include <mutex>
+#include <functional>
 
 void print_message() {
   std::cout << "Hello from thread" << std::endl;
 }
 
-void count_to(const int n, const std::string& name) {
+void count_to(std::mutex& mtx, const int n, const std::string& name) {
   for(auto i = 1; i <= n; i++) {
+    std::lock_guard<std::mutex> lock(mtx);
     std::cout << name << ": " << i << std::endl;
   }
 }
@@ -25,12 +27,14 @@ void count_to(const int n, const std::string& name) {
  */
 
 int main() {
+
+  std::mutex mtx;
+
   const int thread_1_max = 6;
   const int thread_2_max = 3;
-  Common c;
 
-  std::thread t1(count_to, thread_1_max, "thread-1");
-  std::thread t2(count_to, thread_2_max, "thread-2");
+  std::thread t1(count_to, std::ref(mtx), thread_1_max, "thread-1");
+  std::thread t2(count_to, std::ref(mtx), thread_2_max, "thread-2");
   t1.join();
   t2.join();
 
